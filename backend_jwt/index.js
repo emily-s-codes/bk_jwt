@@ -1,5 +1,3 @@
-// https://www.bezkoder.com/node-js-express-login-mongodb/ with conversion to esm and some editing for my preferences
-
 import './config/dotenv.js'
 import express from 'express'
 import cors from 'cors'
@@ -32,13 +30,13 @@ app.use(
 )
 
 // AUTH
-app.post('/api/auth/signup', [
+app.post('/api/auth/signup', setHeaders, [
     checkUniqueUserOrEmail,
     checkRolesExist
 ],
     signup)
 
-app.post('/api/auth/signin', signin)
+app.post('/api/auth/signin', setHeaders, signin)
 
 app.post('/api/auth/logout', logout)
 

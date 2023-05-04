@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import db from "../models/modIndex.js";
 const User = db.user
 const Role = db.role
+const RefreshToken = db.refreshToken
 
 export const signup = async (req, res) => {
     console.log('signing up')
@@ -45,7 +46,7 @@ export const signup = async (req, res) => {
     }
 }
 
-// build a way to reroute to a different function if user provides email in input rather than username
+// username/email input must be named 'input'
 export const signin = async (req, res) => {
     console.log('signing in')
     let user;
@@ -71,10 +72,15 @@ export const signin = async (req, res) => {
         )
 
         if (!passwordIsValid) {
-            res.status(401).send({ message: 'invalid login credentials' })
+            res.status(401).send({
+                accessToken: null,
+                message: 'invalid login credentials'
+            })
         }
 
-        let token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: 10000 })
+        let token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY })
+
+        let refreshToken = await RefreshToken.createToken(user)
 
         let authorities = []
 
@@ -88,10 +94,13 @@ export const signin = async (req, res) => {
             id: user._id,
             username: user.username,
             email: user.email,
-            roles: authorities
+            roles: authorities,
+            accessToken: token,
+            refreshToken: refreshToken
         })
 
     } catch (error) {
+        console.log('error logging in')
         res.status(400).send({ message: 'something went wrong with logging in' })
     }
 }
