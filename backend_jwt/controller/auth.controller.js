@@ -89,6 +89,7 @@ export const signin = async (req, res) => {
         }
 
         req.session.token = token
+        req.session.refreshToken = refreshToken
 
         res.status(200).json({
             id: user._id,
@@ -107,6 +108,7 @@ export const signin = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
+
         req.session = null
         res.status(200).send({ message: 'logged out' })
     } catch (error) {

@@ -9,6 +9,7 @@ import { checkRolesExist, checkUniqueUserOrEmail } from './middleware/verifySign
 import { adminBoard, allAccess, moderatorBoard, userBoard } from './controller/user.controller.js'
 import { isAdmin, isModerator, verifyToken } from './middleware/authJwt.js'
 import { setHeaders } from './middleware/headers.js'
+import { refreshToken } from './config/refreshToken.js'
 
 const PORT = process.env.PORT
 const app = express()
@@ -58,6 +59,9 @@ app.get('/api/access/admin',
     [verifyToken, isAdmin],
     adminBoard)
 
+
+// REFRESH TOKEN
+app.post('/api/auth/refreshtoken', refreshToken)
 
 app.get('/', (req, res) => {
     res.status(200).json({ message: 'application running' })
