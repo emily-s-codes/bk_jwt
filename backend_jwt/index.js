@@ -10,6 +10,7 @@ import { logout, signin, signup } from './controller/auth.controller.js'
 import { checkRolesExist, checkUniqueUserOrEmail } from './middleware/verifySignUp.js'
 import { adminBoard, allAccess, moderatorBoard, userBoard } from './controller/user.controller.js'
 import { isAdmin, isModerator, verifyToken } from './middleware/authJwt.js'
+import { setHeaders } from './middleware/headers.js'
 
 const PORT = process.env.PORT
 const app = express()
@@ -21,14 +22,6 @@ app.use(morgan('dev'))
 app.use(cors({ corsOptions }))
 app.use(express.json()) // parse requests of content-type application/json
 app.use(express.urlencoded({ extended: true })) // parse requests of content-type application/x-www-form-urlencoded
-
-app.use(function (_, res, next) {
-    res.header(
-        "Access-Control-Allow-Headers",
-        "Origin, Content-Type, Accept"
-    );
-    next();
-});
 
 app.use(
     cookieSession({

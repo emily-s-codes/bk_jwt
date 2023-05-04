@@ -5,6 +5,7 @@ const User = db.user
 const Role = db.role
 
 export const signup = async (req, res) => {
+    console.log('signing up')
     try {
         if (req.body.roles) {
             try {
@@ -46,10 +47,18 @@ export const signup = async (req, res) => {
 
 // build a way to reroute to a different function if user provides email in input rather than username
 export const signin = async (req, res) => {
+    console.log('signing in')
+    let user;
+    const userInput = req.body.input
     try {
-        const user = await User.findOne({ username: req.body.username })
+        if (userInput.includes('@')) {
+            console.log('email')
+            user = await User.findOne({ email: req.body.input })
+        } else {
+            console.log('username')
+            user = await User.findOne({ username: req.body.input })
+        }
         await user.populate('roles', '-__v')
-
         console.log(user)
 
         if (!user) {
@@ -57,7 +66,7 @@ export const signin = async (req, res) => {
         }
 
         let passwordIsValid = bcrypt.compareSync(
-            req.body, password,
+            req.body.password,
             user.password
         )
 
@@ -83,7 +92,7 @@ export const signin = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(400).send({ message: error })
+        res.status(400).send({ message: 'something went wrong with logging in' })
     }
 }
 

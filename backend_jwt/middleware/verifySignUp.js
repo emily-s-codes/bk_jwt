@@ -2,12 +2,13 @@ import db from "../models/modIndex.js";
 const ROLES = db.ROLES
 const User = db.user
 
-export const checkUniqueUserOrEmail = (req, res, next) => {
+export const checkUniqueUserOrEmail = async (req, res, next) => {
     try {
-        const username = User.findOne({ username: req.body.username })
-        const email = User.findOne({ email: req.body.email })
-        if (username) res.status(400).send({ message: 'Username already in use' })
-        if (email) res.status(400).send({ message: 'Email already in use' })
+        const username = await User.exists({ username: req.body.username })
+        const email = await User.exists({ email: req.body.email })
+        console.log('user', username, 'email', email)
+        if (username !== null) return res.status(400).send({ message: 'Username or email already in use' })
+
     } catch (error) {
         if (error) res.status(500).send({ message: error })
     }
